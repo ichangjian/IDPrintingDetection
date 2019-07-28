@@ -5,11 +5,15 @@
 using namespace cv;
 using namespace IDPrintingDetection;
 Mat image_st, image_sh;
-
-void mark();
+Mat dst;
+int thr = 10;
+int mark();
+int blackPot();
 int IDPD::sum(int x, int y)
 {
+	thr = x;
 	mark();
+	blackPot();
 	return x + y;
 }
 
@@ -25,12 +29,66 @@ int IDPD::setStImage(IntPtr data, int width, int height)
 	imwrite("st.png", image_st);
 	return 0;
 }
+int IDPD::setStImage(System::String^ fileName)
+{
+	char* w = (char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(fileName).ToPointer());
+	std::string s(w);
+	std::cout << s << std::endl;
+	image_st =imread(s);
+	//imwrite("st.png", image_st);
+	return 0;
+}
+int IDPD::setShImage(System::String^ fileName)
+{
+	char* w = (char*)(System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(fileName).ToPointer());
+	std::string s(w);
+	std::cout << s << std::endl;
+	image_sh = imread(s);
+	//imwrite("sh.png", image_sh);
+	return 0;
+}
+int blackPot()
+{
+	Point origin_lr(200,630);
+	Rect rect_1_1(200,630, 2000, 1250);
+	Mat image = dst(rect_1_1);
+	Mat gb;
+	GaussianBlur(image, gb, Size(21, 21), 2);
+	//imwrite("bd-01.png", gb);
+	Mat sb = (gb - image) > thr;
+	// Sobel(image,sb,image.depth(),1,1,11);
+	//imwrite("bd-02.png", sb);
+	rectangle(sb, Rect(1000-200,1530-630,750,240), Scalar(0), -1);
+	//imwrite("bd-03.png", sb);
+	//rectangle(sb, Rect(), Scalar(0), -1);
+	std::vector<std::vector<Point> >contours;
+	std::vector<Vec4i> hierarchy;
+	//(Rect(20, 20, sb.cols - 40, sb.rows - 40))
+	findContours(sb, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
-
-void mark()
+	//»æÖÆÂÖÀªÍ¼
+	Mat rgb;
+	cvtColor(dst, rgb, COLOR_GRAY2BGR);
+	for (int i = 0; i < contours.size(); i++)
+	{
+		for (size_t j = 0; j < contours[i].size(); j++)
+		{
+			contours[i][j] += origin_lr;
+		}
+		Scalar color = Scalar(rand() % 255, rand() % 255, rand() % 255);
+		drawContours(rgb, contours, i, Scalar(0,0,255), 2, 8);
+	}
+	imwrite("¼ì²â½á¹û.png", rgb);
+	return 0;
+}
+int mark()
 {
 	Mat image1;// = imread("bei.jpg", 0);
 	Mat image2;// = imread("bei-big.png", 0);
+	if (image_st.empty()|| image_sh.empty())
+	{
+		return -1;
+	}
 	Size imageSize = image1.size();
 	cvtColor(image_st, image2, COLOR_BGR2GRAY);
 	cvtColor(image_sh, image1, COLOR_BGR2GRAY);
@@ -50,6 +108,23 @@ void mark()
 	std::vector<Point2f> pts1, pts2;
 	lm1.getMarkPosition(image1, pts1);
 	lm2.getMarkPosition(image2, pts2);
+	for (size_t i = 0; i < pts1.size(); i++)
+	{
+		std::cout <<"sh\t" <<pts1[i] << std::endl;
+	}
+	for (size_t i = 0; i < pts2.size(); i++)
+	{
+		std::cout << "st\t" << pts2[i] << std::endl;
+	}
+	pts2.clear();
+	pts2.push_back(Point2f(397.322, 331.003));
+	pts2.push_back(Point2f(4059.33, 331.004));
+		pts2.push_back(Point2f(4059.33, 6115.34));
+		pts2.push_back(Point2f(397.321, 6115.34));
+	for (size_t i = 0; i < 4; i++)
+	{
+
+	}
 	std::vector<Point2f> chess1, chess2, tp1, tp2;
 	tp1.push_back(Point2f(0, 0));
 	tp1.push_back(Point2f(image1.cols, 0));
@@ -94,7 +169,7 @@ void mark()
 	}
 	for (size_t i = 0; i < 4; i++)
 	{
-		std::cout << tp1[i] << "\t" << tp2[i] << std::endl;
+		std::cout << chess1[i] << "\t" << chess2[i] << std::endl;
 	}
 	std::vector<uchar> status;
 	Mat H = findHomography(chess1, chess2, RANSAC, 1, status, 1000, 0.999);
@@ -102,5 +177,6 @@ void mark()
 	// image1=imread("image1.jpg");
 	Mat wp;
 	warpPerspective(image1, wp, H, image2.size());
+	dst = wp;
 	imwrite("scen.png", wp);
 }

@@ -35,6 +35,8 @@
             this.button_select_st = new System.Windows.Forms.Button();
             this.button_select_sh = new System.Windows.Forms.Button();
             this.button_run = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBox_thr = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -93,7 +95,7 @@
             // 
             // button_run
             // 
-            this.button_run.Location = new System.Drawing.Point(641, 303);
+            this.button_run.Location = new System.Drawing.Point(440, 229);
             this.button_run.Name = "button_run";
             this.button_run.Size = new System.Drawing.Size(75, 23);
             this.button_run.TabIndex = 6;
@@ -101,11 +103,30 @@
             this.button_run.UseVisualStyleBackColor = true;
             this.button_run.Click += new System.EventHandler(this.button_run_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(193, 233);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(67, 15);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "检测阈值";
+            // 
+            // textBox_thr
+            // 
+            this.textBox_thr.Location = new System.Drawing.Point(300, 228);
+            this.textBox_thr.Name = "textBox_thr";
+            this.textBox_thr.Size = new System.Drawing.Size(100, 25);
+            this.textBox_thr.TabIndex = 8;
+            this.textBox_thr.Text = "10";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.textBox_thr);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.button_run);
             this.Controls.Add(this.button_select_sh);
             this.Controls.Add(this.button_select_st);
@@ -128,6 +149,8 @@
         private System.Windows.Forms.Button button_select_st;
         private System.Windows.Forms.Button button_select_sh;
         private System.Windows.Forms.Button button_run;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBox_thr;
     }
 }
 

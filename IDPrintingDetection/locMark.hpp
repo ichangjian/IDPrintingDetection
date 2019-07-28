@@ -21,7 +21,7 @@ private:
 	std::vector<cv::Point2f> m_prePositon;
 };
 
-#define DEBUG_MARK
+//#define DEBUG_MARK
 LocMark::LocMark()
 {
 	m_markSize = 150;
@@ -310,7 +310,7 @@ int LocMark::getMarkPosition(const cv::Mat& img, std::vector<cv::Point2f> &posit
 			if (abs(centerWH[i].x + centerWH[i].y - centerWH[minj].x - centerWH[minj].y) < 100)
 			{
 				markCenter.push_back((centers[i] + centers[minj]) / 2);
-
+				std::cout << "markCenter" << i << "\t" << centers[i] << "\t" << minj << "\t" << centers[minj] << (centers[i] + centers[minj]) / 2 << std::endl;
 				//update parameters
 				tpm_markSize += minDst;
 				tpm_blackMarkThreshold -= (image.at<uchar>(centers[i].y, centers[i].x) +
